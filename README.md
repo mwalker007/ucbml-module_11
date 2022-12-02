@@ -6,16 +6,16 @@ The primary business objective is to provide clear recommendations our client, a
 
 #### Data Mining Goals
 
-Given the dataset of 426K vehicle purchases which includes the features () along with the target selling price, determine which features are most important in determining the price paid for a used vehicle. The desired output is a list of the most important features in rank order.  
+Given the dataset of 426K vehicle purchases which includes the features (id, region, year, manufacturer, model, condition, cylinders,
+fuel, odometer, title_status, transmission, VIN, drive, size, type, paint_color, state) along with the target selling price, determine which features are most important in determining the price paid for a used vehicle. The desired output is a list of the most important features in rank order.  
 
 #### Project Plan
 
 1) Aquire and explore the dataset for understanding
 2) Prepare the data including cleaning and preprocessing
-3) Try various modeling techniques in order to find the best model fit for the data
+3) Try various modeling techniques in order to find the best model fit for the data and feature importance
 4) Evaluate model outputs and repeat steps 3 & 4 as needed
-5) Determine Feature Importance
-6) Document analysis findings
+5) Document analysis findings
 
 ### Data Understanding
 
@@ -33,16 +33,17 @@ Numerical Columns: ['id', 'price', 'year', 'odometer']
 Categorical Columns: ['region', 'manufacturer', 'model', 'condition', 'cylinders', 'fuel', 'title_status', 'transmission', 'VIN', 'drive', 'size', 'type', 'paint_color', 'state']
 
 ##### Explored Relationship of Numerical Columns
-* Determine that these columns are not highly correlated
+* Determined that the numerical columns are not highly correlated
 
 ##### Explored Counts of the Categorical Numerical Columns through histograms
+See Notebook for Chart Output
 
 ### Data Preparation
 
 ##### Data Selection
 
 ##### Drop the following columns:
-*  id and VIN because they are not values people make buying decisions on unless in the case of the vin the vehicle is very unique
+*  id and VIN because they are not values people make buying decisions on unless in the case of the VIN the vehicle is extremely unique
 *  region because there is only a relatively small amount of data for each region
 
 ##### Handle the remaining columns as follows:
@@ -57,14 +58,14 @@ Categorical Columns: ['region', 'manufacturer', 'model', 'condition', 'cylinders
 * Title Status - Keep only Clean since there is limited data for the other values 
 * Transmission - Keep only Automatic since there is limited data for the other values 
 * drive - Keep all
-* size - create an order - sub-compact,compact,mid-size,full-size
+* size - Create an order - sub-compact,compact,mid-size,full-size
 * type - Keep all except off-road and bus becuase they are uncommon and not represented well in the dataset
 * paint - Keep paint colors with above 1,000 samples in the dataset since they are the most common
 * State - Don't include in modeling since many states are not well represented in the dataset
 
 ##### Data Cleansing
 * A review of remaining values after initial selection steps showed that there are not enough rows with size values relative to the rest of the columns to be useful so it is dropped
-* Dropped any remaining rows is NaN values to support model building
+* Dropped any remaining rows with NaN values to better support model training algorithms
 
 ###### Review Remaining Data
 * Data columns (total 14 columns):
@@ -89,10 +90,10 @@ Categorical Columns: ['region', 'manufacturer', 'model', 'condition', 'cylinders
 1. As expected more recent vehicles typically cost more but there are exceptions
 
 ##### Explore the realtionship between Odometer and Price
-1. There is an inverse relationship between Odometer and Price was some outliers
+1. There is an inverse relationship between Odometer and Price with some outliers
 
 ##### Explore the realtionship between State and Price
-1. There is not a clear relationship between state and price which is the reason to drop state for modeling consideration
+1. There is not a clear relationship between state and price 
 
 ##### Data Selection
 1.  Since fuel,title_status, transmission have all been limited to one value, they can be dropped for modeling purposes. State is also dropped since there isn't a strong correlation between state and price.
@@ -103,7 +104,7 @@ Categorical Columns: ['region', 'manufacturer', 'model', 'condition', 'cylinders
     2. Test MSEs:['58417291.92', '54526704.52', '54413949.87', '53949332.01', '53601885.08']
     3. Order 2 had the nearly the best Test MSE so degree=2 will be used going forward inorder to minimize overfitting
 ##
-2. Trained a second order LinReg model for year and odometer and to get coefficients
+2. Trained a second order LinReg model for year and odometer along with determining coefficients/feature importance
     1. Train MSE:  53,651,593.50
     2. Test MSE:  54,526,704.52
     3. feature coef
@@ -116,6 +117,7 @@ Categorical Columns: ['region', 'manufacturer', 'model', 'condition', 'cylinders
 3. Trained a Ridge Regression model using only first order year and odometer values to find the best Alpha and see if Ridge has a lower MSE than Linreg
     1. Test MSE: 58,417,286.93
     2. Best Alpha: 10.0
+    3. This was not better than a 2nd order polynomial LinReg model
 ##
 4. Trained a Ridge Regression model using second order year and odometer values to find the best Alpha and if Ridge has a lower MSE than LinReg
     1. Test MSE: 54,526,035.19
@@ -140,7 +142,7 @@ Categorical Columns: ['region', 'manufacturer', 'model', 'condition', 'cylinders
         4. Year^2     -2614.098847
         5. year odometer     -1648.448340
         6. Odometer^2     4201.894958
-*
+##
 7. Trained a Lasso model using 1st order year and odometer values along with ordinal encoded cyclinders and condition values to determine feature importance
     1. Train MSE:  33,943,901.03
     2. Test MSE:  34,767,370.60
@@ -149,21 +151,38 @@ Categorical Columns: ['region', 'manufacturer', 'model', 'condition', 'cylinders
         3. odometer     4894.743268
         4. cylinders    5139.360788
         5. condition    -2989.811602
-    3. RESULTS: When trained on only year, odometer, cylinders, and condition, the most important feature was cylinders followed by odometer,condition and year
-*
+    3. With more features, the model had a much lower MSE and better fit for the test dataset. 
+    4. RESULTS: When trained on only year, odometer, cylinders, and condition, the most important feature was cylinders followed by odometer,condition and year
+##
 8. Created LinReg models for the numerical features + one of the categorical feature at a time and then compare MSEs
-TODO add results
-    1. RESULTS: When combined with: [odometer,cylinders,condition,year],type was the most important feature followed by drive,paint_color, model and manufacturer.
-*
+    1.    feature      test mse
+    2.    manufacturer  5.790257e+07
+    3.    model         5.790257e+07
+    4.    drive         2.946073e+07
+    5.    type          2.888626e+07
+    6.    paint_color   3.248619e+07
+    7.    RESULTS: When combined with: [odometer,cylinders,condition,year],type was the most important feature followed by drive,paint_color, model and manufacturer.
+##
 9. Created LinReg model for each of the  features trained one at a time and then compare MSEs
-    1. RESULTS: When modeled individually,the order of feature importance was year,model,odometer,type,drive,cylinders,manufacuturer, condition and paint color.
-*
+    1.    feature      test mse
+    2.    odometer  7.380323e+07
+    3.    cylinders  8.856595e+07
+    4.    condition  9.490218e+07
+    5.    year  5.753197e+07
+    6.    manufacturer  9.133293e+07
+    7.    model  6.850711e+07
+    8.    drive  8.592261e+07
+    9.    type  8.106760e+07
+    10.   paint_color  1.004205e+08 
+    11.   RESULTS: When modeled individually,the order of feature importance was year,model,odometer,type,drive,cylinders,manufacuturer, condition and paint color.
+##
 10. Similar to above above where I created a LinReg model for each of the  features trained one at a time and then compare MSEs, but now varying the degree of the Polynomial Transformer
     1. RESULTS: Regardless of Polynomial order between 1-5, when modeled individually,the order of feature importance was still year,model,odometer,type,drive,cylinders,manufacuturer, condition and paint color.
-*
+##
 11. Created Ridge model with Alpah=10 for the numerical features + one of the categorical feature at a time and then compare MSEs
     1. RESULTS: Similar to the LinReg model where the order of feature importance was year,model,odometer,type,drive,cylinders,manufacuturer,condition and paint color.
 
+##
 ### Evaluation
 #### Summary of Results
 1. Multiple Linear Regression, Ridge, and Lasso were trained on a subset of the initial data and regardless of the model type the rank of feature importance was
@@ -185,4 +204,4 @@ US subregions such as North East, Mid-West, etc. to understand how price varies 
 3. Explore other feature importance methods such as permutation_importance
 4. As usual, having more data, especially data that helps have more records from the less common models, types, etc. would likely be usefull in getting more accurate predictions.
 
-## The Jupyter Notebook used to analyze the data can be found at [prompt_II.ipynb](./prompt_II.ipynb)
+#### The Jupyter Notebook used to analyze the data can be found at [prompt_II.ipynb](./prompt_II.ipynb)
