@@ -108,11 +108,11 @@ See Notebook for Chart Output
     1. Train MSE:  53,651,593.50
     2. Test MSE:  54,526,704.52
     3. feature coef
-        1. odometer  1.351096e+04
-        2. year  -1.427082e+06
-        3. odometer^2  1.732982e+03
-        4. odometer year  -1.720482e+04
-        5. year^2  1.432260e+06
+        *  odometer       1.351096e+04
+        *  year           -1.427082e+06
+        *  odometer^2     1.732982e+03
+        *  odometer year  -1.720482e+04
+        *  year^2         1.432260e+06
 ##
 3. Trained a Ridge Regression model using only first order year and odometer values to find the best Alpha and see if Ridge has a lower MSE than Linreg
     1. Test MSE: 58,417,286.93
@@ -128,53 +128,53 @@ See Notebook for Chart Output
     1. Train MSE:  57,668,137.18
     2. Test MSE:  58,417,325.01
     3. Lasso Coefficients:
-        1. feature     coef
-        2. year     4673.874150
-        3. odometer     -2792.832738
+        * feature     coef
+        * year        4673.874150
+        * odometer    -2792.832738
 ##
 6. Trained a Lasso model using 2nd order year and odometer values and examine feature importance
     1. Train MSE:  56510282.66
     2. Test MSE:  57173256.88
     3. Lasso Coefficients:
-        1. Feature     coef
-        2. year     7313.202555
-        3. odometer     -5194.636102
-        4. Year^2     -2614.098847
-        5. year odometer     -1648.448340
-        6. Odometer^2     4201.894958
+        * Feature       coef
+        * year          7313.202555
+        * odometer      -5194.636102
+        * Year^2        -2614.098847
+        * year odometer -1648.448340
+        * Odometer^2    4201.894958
 ##
 7. Trained a Lasso model using 1st order year and odometer values along with ordinal encoded cyclinders and condition values to determine feature importance
     1. Train MSE:  33,943,901.03
     2. Test MSE:  34,767,370.60
-        1. feature   coef
-        2. year    574.933204
-        3. odometer     4894.743268
-        4. cylinders    5139.360788
-        5. condition    -2989.811602
+        * feature      coef
+        * year         574.933204
+        * odometer     4894.743268
+        * cylinders    5139.360788
+        * condition    -2989.811602
     3. With more features, the model had a much lower MSE and better fit for the test dataset. 
     4. RESULTS: When trained on only year, odometer, cylinders, and condition, the most important feature was cylinders followed by odometer,condition and year
 ##
 8. Created LinReg models for the numerical features + one of the categorical feature at a time and then compare MSEs
-    1.    feature      test mse
-    2.    manufacturer  5.790257e+07
-    3.    model         5.790257e+07
-    4.    drive         2.946073e+07
-    5.    type          2.888626e+07
-    6.    paint_color   3.248619e+07
-    7.    RESULTS: When combined with: [odometer,cylinders,condition,year],type was the most important feature followed by drive,paint_color, model and manufacturer.
+    *     feature       test mse
+    *     manufacturer  5.790257e+07
+    *     model         5.790257e+07
+    *     drive         2.946073e+07
+    *     type          2.888626e+07
+    *     paint_color   3.248619e+07
+    *     RESULTS: When combined with: [odometer,cylinders,condition,year],type was the most important feature followed by drive,paint_color, model and manufacturer.
 ##
 9. Created LinReg model for each of the  features trained one at a time and then compare MSEs
-    1.    feature      test mse
-    2.    odometer  7.380323e+07
-    3.    cylinders  8.856595e+07
-    4.    condition  9.490218e+07
-    5.    year  5.753197e+07
-    6.    manufacturer  9.133293e+07
-    7.    model  6.850711e+07
-    8.    drive  8.592261e+07
-    9.    type  8.106760e+07
-    10.   paint_color  1.004205e+08 
-    11.   RESULTS: When modeled individually,the order of feature importance was year,model,odometer,type,drive,cylinders,manufacuturer, condition and paint color.
+    *     feature       test mse
+    *     odometer      7.380323e+07
+    *     cylinders     8.856595e+07
+    *     condition     9.490218e+07
+    *     year          5.753197e+07
+    *     manufacturer  9.133293e+07
+    *     model         6.850711e+07
+    *     drive         8.592261e+07
+    *     type          8.106760e+07
+    *    paint_color    1.004205e+08 
+    *    RESULTS: When modeled individually,the order of feature importance was year,model,odometer,type,drive,cylinders,manufacuturer, condition and paint color.
 ##
 10. Similar to above above where I created a LinReg model for each of the  features trained one at a time and then compare MSEs, but now varying the degree of the Polynomial Transformer
     1. RESULTS: Regardless of Polynomial order between 1-5, when modeled individually,the order of feature importance was still year,model,odometer,type,drive,cylinders,manufacuturer, condition and paint color.
